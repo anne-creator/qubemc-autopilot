@@ -1,0 +1,28 @@
+---
+const { name } = Astro.props;
+const paths: Record<string, string> = {
+  plugin: "M3 4h6v3h3v4H9v4H3z M14 9h7v11h-6v-3h-3v-4h2",
+  runtime:
+    "M2.5 4.5h13v6h-13z M8.5 14h13v6h-13z M5.5 7.5h2m4 9.5h2 M18.5 6h3m-1.5-1.5v3",
+  memory:
+    "M3 7h18v9H3z M6 10h3v3H6z M12 10h3v3h-3z M18 10v3 M6 16v3m4-3v3m4-3v3m4-3v3",
+  storage:
+    "M4 4h16v16H4z M7 8h10m-10 4h10m-10 4h10 M10 6v4m4 0v4m-5 0v4 M17 19v1",
+  performance: "M3 5v14h18 M5 13h4l2-6 3 9 2-5h5",
+};
+---
+
+<svg
+  class="incident-icon"
+  aria-hidden="true"
+  width="28"
+  height="28"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.65"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d={paths[name]}></path>
+</svg>

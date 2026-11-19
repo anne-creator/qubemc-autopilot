@@ -1,0 +1,344 @@
+@font-face {
+  font-family: "Doto";
+  src: url("/assets/fonts/Doto-BoldSquare.woff2") format("woff2");
+  font-weight: 800;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("/assets/fonts/IBMPlexMono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("/assets/fonts/IBMPlexMono-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-display: swap;
+}
+
+:root {
+  --autopilot-font:
+    "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.terrain-backdrop.hero-backdrop {
+  position: fixed;
+  inset: 0;
+  height: auto;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.hero-stage,
+#workflow {
+  overflow-x: clip;
+}
+
+.safety-section[data-screen] {
+  background: transparent;
+}
+
+.environment-screen {
+  padding-block: 64px;
+}
+
+.hero h1 {
+  position: relative;
+}
+
+.title-line {
+  display: block;
+}
+
+#hero-title {
+  font-family: "Doto", var(--autopilot-font);
+  font-size: min(9.3cqi, 68px);
+  font-weight: 800;
+  font-synthesis: none;
+  letter-spacing: -0.05em;
+}
+
+.reference-dot-scatter {
+  display: none;
+  position: absolute;
+  inset: -320px;
+  width: calc(100% + 640px);
+  height: calc(100% + 640px);
+  max-width: none;
+  pointer-events: none;
+}
+
+#hero-title.dot-scatter-ready > span {
+  opacity: 0;
+}
+
+#hero-title.dot-scatter-ready > .reference-dot-scatter {
+  display: block;
+}
+
+@media (forced-colors: active) {
+  #hero-title.dot-scatter-ready > span {
+    opacity: 1;
+  }
+
+  #hero-title.dot-scatter-ready > .reference-dot-scatter {
+    display: none;
+  }
+}
+
+.desktop-nav a {
+  padding: 8px 12px;
+}
+
+#mobile-nav .menu-action {
+  padding: 8px 12px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+}
+
+.hero .actions .button {
+  border-radius: 10px;
+}
+
+.hero .actions .secondary {
+  background: #ffffff09;
+  border-color: #c2d3c344;
+}
+
+.hero .actions .button:active {
+  transform: scale(0.97);
+}
+
+:where([data-specular]) {
+  position: relative;
+}
+
+[data-specular]:not([data-shader="ready"])::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 2px;
+  background: radial-gradient(
+    52px circle at var(--pointer-x) var(--pointer-y),
+    #92d6a6,
+    var(--logo-green) 45%,
+    transparent 100%
+  );
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+[data-specular][data-lit]:not([data-shader="ready"])::after {
+  opacity: 1;
+}
+
+[data-specular][data-lit]:not(.primary):hover {
+  border-color: #4c6854;
+}
+
+[data-specular]:is(.desktop-contact, .hero .actions .secondary):not(
+    [data-lit]
+  ) {
+  --pointer-x: 100%;
+  --pointer-y: 0%;
+}
+
+[data-specular]:is(.desktop-contact, .hero .actions .secondary):not(
+    [data-shader="ready"]
+  )::after {
+  opacity: 0.95;
+}
+
+.m12-specular-light {
+  position: absolute;
+  z-index: 1;
+  display: block;
+  pointer-events: none;
+  max-width: none;
+}
+
+.hero-stage .product {
+  position: relative;
+}
+
+.hero-stage .product::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  padding: 2px;
+  background:
+    radial-gradient(
+      190px 96px at 100% 0,
+      var(--logo-green) 0,
+      #189040c2 35%,
+      transparent 100%
+    ),
+    radial-gradient(120px 80px at 100% 100%, #1890408c, transparent);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.workflow-panel .panel-bar {
+  align-items: center;
+  gap: 8px;
+  min-height: 62px;
+}
+
+.button.rotation-control {
+  min-height: 32px;
+  padding: 4px 10px;
+  background: transparent;
+  color: #d2ddd5;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.workflow-cards {
+  display: grid;
+  overflow: hidden;
+}
+
+.workflow-card {
+  grid-area: 1 / 1;
+  visibility: hidden;
+  min-width: 0;
+}
+
+.workflow-card:is([data-active], [data-outgoing]) {
+  visibility: visible;
+}
+
+.workflow-card[data-active] {
+  z-index: 1;
+}
+
+.incident-glyph {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid #485260;
+  border-radius: 8px;
+  color: #e6ebf2;
+  background: #151b23;
+}
+
+.incident-icon {
+  display: block;
+}
+
+.environment-image {
+  overflow: hidden;
+}
+
+.environment-image img {
+  transform-origin: 51% 63%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .environment-image img[data-zoomed] {
+    animation: city-push-in 4s var(--ui-ease) both;
+  }
+}
+
+@keyframes city-push-in {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.06);
+  }
+}
+
+@media (min-width: 1000px) and (min-height: 740px) {
+  main > [data-screen] {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    scroll-margin-top: 0;
+  }
+
+  main > .hero-stage[data-screen] {
+    min-height: calc(100svh - 104px);
+  }
+
+  .hero-stage .hero {
+    flex: 1;
+    padding-block: 32px;
+  }
+
+  [data-screen] :is(.section, .safety-layout) {
+    padding-block: 44px;
+  }
+
+  [data-screen] .section-heading {
+    margin-bottom: 32px;
+  }
+
+  .workflow-panel .panel-content {
+    padding-block: 26px;
+  }
+
+  .environment-screen[data-screen] {
+    padding-block: 36px;
+  }
+
+  html[data-screen-mode] {
+    scroll-padding-top: 0;
+  }
+}
+
+@media (min-width: 1000px) and (min-height: 740px) and (max-height: 850px) {
+  .hero-stage .hero {
+    padding-block: 12px;
+  }
+
+  .hero-stage .product .incident-body {
+    padding-block: 16px;
+  }
+
+  .hero-stage .product .repair {
+    padding-top: 14px;
+  }
+
+  .hero-stage .product .console {
+    padding-block: 12px;
+  }
+}
+
+@media (max-width: 760px) {
+  .environment-screen {
+    padding-block: 32px;
+  }
+
+  #hero-title {
+    font-size: min(9.3cqi, 52px);
+    line-height: 1.18;
+  }
+
+  .hero .actions {
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero .actions .button:active {
+    transform: none;
+  }
+}

@@ -1,0 +1,1630 @@
+---
+import PixelPreview from "@/components/explore/PixelPreview.astro";
+import IncidentIcon from "@/components/explore/IncidentIcon.astro";
+import "@/styles/autopilot-motion.css";
+
+const stages = [
+  [
+    "Vault is missing.",
+    "Paper stops during startup. The plugin error names the dependency it needs.",
+    "Startup log",
+    "Plugin load failure: required dependency Vault was not found.",
+    "Escalate if the logs don’t establish a cause.",
+  ],
+  [
+    "Install a compatible version of Vault.",
+    "A mismatched build could keep the plugin from loading.",
+    "Before installation",
+    "Check the Vault version against the server build and verify the download source.",
+    "Only plugins from trusted sources are eligible.",
+  ],
+  [
+    "Approve the install for this server.",
+    "The gateway checks permissions and action parameters. An authorized operator reviews the plan.",
+    "Before approval",
+    "Confirm the target server, trusted source, and recent backup.",
+    "Execution requires both policy checks and operator approval.",
+  ],
+  [
+    "Check the next boot.",
+    "Review the startup log. Confirm that Paper starts and the plugin loads with Vault.",
+    "If the server still fails",
+    "Roll back the change or escalate to an operator.",
+    "Record the outcome and recovery decision in the audit log.",
+  ],
+];
+
+const incidents = [
+  [
+    "plugin",
+    "Plugin conflicts",
+    "Missing dependencies, incompatible versions, and failed updates.",
+  ],
+  [
+    "runtime",
+    "Runtime mismatches",
+    "Incompatible Java versions and server builds.",
+  ],
+  [
+    "memory",
+    "Memory failures",
+    "Out-of-memory errors and recurring crash loops.",
+  ],
+  [
+    "storage",
+    "Storage & configuration",
+    "Full disks, failed writes, and invalid configuration.",
+  ],
+  [
+    "performance",
+    "Performance issues",
+    "Low ticks per second (TPS) and slow server ticks.",
+  ],
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" /><meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>QubeMC Autopilot · AI operations for game hosting teams</title>
+    <meta
+      name="description"
+      content="QubeMC is building Autopilot for game hosting teams. It proposes repairs and applies them only after operator approval."
+    />
+    <link rel="icon" href="/assets/img/optimized/logo-mark-128.webp" />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+      href="/assets/fonts/Doto-BoldSquare.woff2"
+    />
+  </head>
+  <body>
+    <div class="terrain-backdrop hero-backdrop" aria-hidden="true">
+      <img src="/assets/img/optimized/background_home.webp" alt="" />
+    </div>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="header wrap">
+      <a class="brand" href="#"
+        ><img
+          src="/assets/img/optimized/logo-mark-128.webp"
+          width="32"
+          height="32"
+          alt=""
+        />QubeMC <span class="brand-product">Autopilot</span></a
+      >
+      <nav class="desktop-nav" aria-label="Main navigation">
+        <a href="#workflow">Workflow</a><a href="#safety">Safety</a><a
+          href="#incidents">Incidents</a
+        ><a href="#environment">Environment</a>
+      </nav>
+      <a class="button small desktop-contact" href="#contact">Let’s talk</a>
+      <button
+        class="menu-button"
+        aria-expanded="false"
+        aria-controls="mobile-nav">Menu</button
+      >
+      <nav id="mobile-nav" hidden aria-label="Mobile navigation">
+        <a href="#workflow">Workflow</a><a href="#safety">Safety</a><a
+          href="#incidents">Incidents</a
+        ><a href="#environment">Environment</a><a
+          class="menu-action"
+          href="#contact">Let’s talk</a
+        ><a class="menu-action" href="https://www.qubemc.com/">QubeMC website</a
+        >
+      </nav>
+    </header>
+    <main id="main">
+      <section class="hero-stage" data-screen>
+        <div class="hero-backdrop" aria-hidden="true">
+          <img
+            src="/assets/img/optimized/background_home.webp"
+            alt=""
+            fetchpriority="high"
+          />
+        </div>
+        <div class="hero wrap">
+          <div class="hero-copy">
+            <h1 id="hero-title">
+              <span class="title-line">AI operations for</span>
+              <span class="title-line">game hosting teams.</span>
+            </h1>
+            <p class="intro">
+              Autopilot finds the cause and proposes a fix. It applies the fix
+              only after you approve it.
+            </p>
+            <p class="hero-audience">
+              For game hosts, server networks, and on-call teams.
+            </p>
+            <div class="actions">
+              <a class="button primary" href="#workflow">See the repair steps</a
+              ><a class="button secondary" href="#contact">Talk to the team</a>
+            </div>
+          </div>
+          <article class="product" aria-labelledby="example-incident-title">
+            <div class="product-top">
+              <h2 id="example-incident-title">
+                <span>Startup failed.</span>
+                <span>Vault is missing.</span>
+              </h2>
+              <div class="incident-heading">
+                <span class="demo-label">Plugin dependency example</span>
+                <span class="status">Needs review</span>
+              </div>
+            </div>
+            <PixelPreview />
+            <div class="incident-body">
+              <div class="console">
+                <span class="console-label">Startup log</span><code
+                  >Plugin failed to load<br /><span
+                    >Missing required dependency: Vault</span
+                  ></code
+                >
+              </div>
+              <div class="repair">
+                <strong>Install a compatible Vault build</strong>
+                <p>Verify the source and take a backup first.</p>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+      <section id="workflow" data-screen>
+        <div class="section wrap">
+          <div class="section-heading">
+            <div>
+              <h2>
+                Getting the server<br />back online
+              </h2>
+            </div><p>
+              Follow the proposed Vault repair from the first startup error to
+              the next boot.
+            </p>
+          </div>
+          <div class="workflow-layout">
+            <div class="steps" role="tablist" aria-label="Incident workflow">
+              <button
+                role="tab"
+                id="step-0"
+                aria-selected="true"
+                aria-controls="workflow-panel"
+                data-step="0"
+                ><span>01</span><strong>Read the log</strong></button
+              >
+              <button
+                role="tab"
+                id="step-1"
+                aria-selected="false"
+                aria-controls="workflow-panel"
+                tabindex="-1"
+                data-step="1"
+                ><span>02</span><strong>Review the fix</strong></button
+              >
+              <button
+                role="tab"
+                id="step-2"
+                aria-selected="false"
+                aria-controls="workflow-panel"
+                tabindex="-1"
+                data-step="2"
+                ><span>03</span><strong>Approve the change</strong></button
+              >
+              <button
+                role="tab"
+                id="step-3"
+                aria-selected="false"
+                aria-controls="workflow-panel"
+                tabindex="-1"
+                data-step="3"
+                ><span>04</span><strong>Verify recovery</strong></button
+              >
+            </div>
+            <div
+              class="workflow-panel"
+              role="tabpanel"
+              id="workflow-panel"
+              aria-labelledby="step-0"
+              tabindex="0"
+            >
+              <div class="panel-bar">
+                <span class="mono">Paper startup failure</span>
+                <button class="button rotation-control" type="button" hidden
+                  >Pause autoplay</button
+                >
+              </div>
+              <div class="panel-content">
+                <div class="workflow-signal" aria-hidden="true">
+                  <div class="signal-nodes">
+                    {
+                      [0, 1, 2, 3].map((step) => (
+                        <span
+                          class="signal-node"
+                          data-current={step === 0 ? "" : undefined}
+                        />
+                      ))
+                    }
+                  </div>
+                  <div class="signal-travel"><span></span></div>
+                </div>
+                <div class="workflow-cards">
+                  {
+                    stages.map(
+                      (
+                        [title, description, evidenceLabel, evidence, note],
+                        index,
+                      ) => (
+                        <div
+                          class="workflow-card"
+                          data-active={index === 0 ? "" : undefined}
+                          aria-hidden={index !== 0}
+                        >
+                          <h3>{title}</h3>
+                          <p class="workflow-description">{description}</p>
+                          <div class="evidence-block">
+                            <span class="mono muted">{evidenceLabel}</span>
+                            <p>{evidence}</p>
+                          </div>
+                          <div class="panel-note">
+                            <span class="square" />
+                            {note}
+                          </div>
+                        </div>
+                      ),
+                    )
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section id="safety" class="safety-section" data-screen>
+        <div class="wrap safety-layout">
+          <div class="safety-copy">
+            <h2>
+              Who can change<br />a server?
+            </h2><p>
+              In our design, the agent can propose a repair. Your access policy
+              sets its limits, and an operator approves risky changes.
+            </p><div class="boundary">
+              <span class="square"></span> No unrestricted shell access
+            </div>
+          </div><div class="safety-list">
+            <article>
+              <div>
+                <h3>Scoped access</h3><p>
+                  Each credential limits access to a specific tenant, server,
+                  and task.
+                </p>
+              </div>
+            </article><article>
+              <div>
+                <h3>Allowed actions</h3><p>
+                  The gateway checks each action’s parameters and approval
+                  rules.
+                </p>
+              </div>
+            </article><article>
+              <div>
+                <h3>Backups and rollback</h3><p>
+                  Back up before a risky change. Check server health afterward
+                  and roll back if needed.
+                </p>
+              </div>
+            </article><article>
+              <div>
+                <h3>Audit log</h3><p>
+                  Each entry links the evidence, requested change, approver, and
+                  result.
+                </p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+      <section id="incidents" data-screen>
+        <div class="section wrap incidents">
+          <div class="section-heading">
+            <div>
+              <h2>
+                Common Minecraft<br />server failures
+              </h2>
+            </div><p>
+              Our first planned playbooks cover five failures hosts can trace
+              through logs and configuration files.
+            </p>
+          </div><div class="incident-list">
+            {
+              incidents.map(([icon, title, body]) => (
+                <article>
+                  <span class="incident-glyph">
+                    <IncidentIcon name={icon} />
+                  </span>
+                  <h3>{title}</h3>
+                  <p>{body}</p>
+                </article>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+      <section id="environment" class="environment-screen" data-screen>
+        <div class="environment wrap">
+          <div class="environment-image">
+            <img
+              src="/assets/img/optimized/city.webp"
+              alt="A Minecraft city built on the QubeMC network"
+              width="1200"
+              height="675"
+              loading="lazy"
+            /><span>A city on the QubeMC network</span>
+          </div><div class="environment-copy">
+            <h2>Paper on Pterodactyl</h2><p>
+              We host Minecraft communities at QubeMC. This is the first setup
+              we’re building Autopilot to support.
+            </p><p>
+              The agent would run outside the game, so it could read startup
+              logs even if Paper fails to boot. An optional Paper probe would
+              add in-game telemetry.
+            </p>
+          </div>
+        </div>
+      </section>
+      <section id="contact" data-screen>
+        <div class="contact wrap">
+          <div class="contact-panel">
+            <video
+              class="contact-sand"
+              aria-hidden="true"
+              muted
+              playsinline
+              preload="none"
+              data-poster="/assets/media/autopilot-sand.webp"
+              data-src="/assets/media/autopilot-sand.mp4"></video>
+            <h2>Which server issue<br />keeps coming back?</h2>
+            <p>
+              Tell us about a recent incident and what you’d need to see before
+              approving an automated fix.
+            </p>
+            <a
+              class="button primary"
+              href="https://www.qubemc.com/contact-us.html">Contact QubeMC</a
+            >
+          </div>
+        </div>
+        <footer class="wrap">
+          <a class="brand" href="#"
+            ><img
+              src="/assets/img/optimized/logo-mark-128.webp"
+              width="28"
+              height="28"
+              alt=""
+            />QubeMC Autopilot</a
+          >
+        </footer>
+      </section>
+    </main>
+    <script>
+      const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+      const easeOut = "cubic-bezier(.22, 1, .36, 1)";
+      const canAnimate = (element: Element) => {
+        const bounds = element.getBoundingClientRect();
+        return (
+          typeof element.animate === "function" &&
+          !reducedMotion.matches &&
+          !document.hidden &&
+          bounds.top < innerHeight &&
+          bounds.bottom > 0
+        );
+      };
+
+      import {
+        loadDotFont,
+        mountDotScatter,
+      } from "@/scripts/autopilot/hero-dots";
+      import { setupPageMotion } from "@/scripts/autopilot/page-motion";
+
+      const heroStage = document.querySelector(".hero-stage");
+      if (heroStage) {
+        void loadDotFont().then(() => {
+          const mount = () => mountDotScatter(heroStage);
+          if ("requestIdleCallback" in window) {
+            window.requestIdleCallback(mount, { timeout: 1200 });
+          } else {
+            setTimeout(mount, 150);
+          }
+        });
+      }
+      setupPageMotion(reducedMotion);
+
+      const sand = document.querySelector<HTMLVideoElement>(".contact-sand");
+      if (sand && "IntersectionObserver" in window) {
+        new IntersectionObserver(
+          ([entry], observer) => {
+            if (!entry.isIntersecting) return;
+            sand.poster = sand.dataset.poster!;
+            observer.disconnect();
+          },
+          { rootMargin: "240px 0px" },
+        ).observe(sand);
+
+        let inView = false;
+        const syncSand = () => {
+          if (reducedMotion.matches || document.hidden || !inView) {
+            sand.pause();
+            return;
+          }
+          if (sand.ended) return;
+          if (!sand.hasAttribute("src")) sand.src = sand.dataset.src!;
+          void sand.play().catch(() => {});
+        };
+        new IntersectionObserver(
+          ([entry]) => {
+            inView = entry.isIntersecting;
+            syncSand();
+          },
+          { threshold: 0.05 },
+        ).observe(sand);
+        reducedMotion.addEventListener("change", syncSand);
+        document.addEventListener("visibilitychange", syncSand);
+      }
+
+      const menu = document.querySelector<HTMLButtonElement>(".menu-button");
+      const mobileNav = document.querySelector<HTMLElement>("#mobile-nav");
+      const closeMenu = () => {
+        if (menu && mobileNav) {
+          menu.setAttribute("aria-expanded", "false");
+          mobileNav.hidden = true;
+        }
+      };
+      menu?.addEventListener("click", () => {
+        const open = menu.getAttribute("aria-expanded") === "true";
+        menu.setAttribute("aria-expanded", String(!open));
+        if (mobileNav) mobileNav.hidden = open;
+      });
+      mobileNav
+        ?.querySelectorAll("a")
+        .forEach((a) => a.addEventListener("click", closeMenu));
+      document.addEventListener("keydown", (e) => {
+        if (
+          e.key === "Escape" &&
+          menu?.getAttribute("aria-expanded") === "true"
+        ) {
+          closeMenu();
+          menu.focus();
+        }
+      });
+      const media = window.matchMedia("(min-width: 761px)");
+      media.addEventListener("change", () => {
+        if (media.matches) closeMenu();
+      });
+      const tabs = Array.from(
+        document.querySelectorAll<HTMLButtonElement>("[data-step]"),
+      );
+      const workflowPanel = document.getElementById("workflow-panel");
+      const track = workflowPanel?.querySelector(".workflow-signal");
+      const packet = track?.querySelector(".signal-travel");
+      const nodes = track?.querySelectorAll(".signal-node");
+      let activeStep = 0;
+      let travel: Animation | undefined;
+      let arrival: Animation | undefined;
+
+      const markArrival = (index: number, animate: boolean) => {
+        nodes?.forEach((node, i) =>
+          node.toggleAttribute("data-current", i === index),
+        );
+        const node = nodes?.[index];
+        if (node && animate) {
+          arrival = node.animate(
+            [{ transform: "scale(.72)" }, { transform: "scale(1)" }],
+            { duration: 180, easing: easeOut },
+          );
+        }
+      };
+
+      const settleSignal = () => {
+        travel?.cancel();
+        arrival?.cancel();
+        travel = undefined;
+        arrival = undefined;
+        markArrival(activeStep, false);
+      };
+
+      const moveSignal = (previous: number) => {
+        if (!track || !packet || !canAnimate(track)) {
+          settleSignal();
+          return;
+        }
+
+        // Continue from the current position if someone switches steps mid-flight.
+        const bounds = track.getBoundingClientRect();
+        const from = travel
+          ? ((packet.getBoundingClientRect().left - bounds.left) /
+              bounds.width) *
+            100
+          : previous * 25;
+        const destination = activeStep;
+        travel?.cancel();
+        arrival?.cancel();
+        nodes?.forEach((node) => node.removeAttribute("data-current"));
+        const animation = packet.animate(
+          [
+            { opacity: 1, transform: `translateX(${from}%)` },
+            { opacity: 1, transform: `translateX(${destination * 25}%)` },
+          ],
+          { duration: 430, easing: easeOut },
+        );
+        travel = animation;
+        animation.onfinish = () => {
+          if (travel !== animation) return;
+          travel = undefined;
+          markArrival(destination, true);
+        };
+      };
+
+      const settleMotion = () => {
+        if (reducedMotion.matches || document.hidden) {
+          slideAnimations.forEach((animation) => animation.cancel());
+          outgoingCard?.removeAttribute("data-outgoing");
+          scheduleRotation();
+          settleSignal();
+        }
+      };
+      reducedMotion.addEventListener("change", () => {
+        settleMotion();
+        scheduleRotation();
+      });
+      document.addEventListener("visibilitychange", () => {
+        settleMotion();
+        scheduleRotation();
+      });
+      if (track && "IntersectionObserver" in window) {
+        const observer = new IntersectionObserver(([entry]) => {
+          if (!entry.isIntersecting) settleSignal();
+        });
+        observer.observe(track);
+      }
+
+      const cards = Array.from(
+        document.querySelectorAll<HTMLElement>(".workflow-card"),
+      );
+      const workflow = document.querySelector<HTMLElement>(".workflow-layout");
+      const rotation =
+        document.querySelector<HTMLButtonElement>(".rotation-control");
+      let slideAnimations: Animation[] = [];
+      let outgoingCard: HTMLElement | undefined;
+      let timer: number | undefined;
+      let visibleWorkflow = false;
+      let manuallyPaused = false;
+      let hovered = false;
+
+      function scheduleRotation() {
+        window.clearTimeout(timer);
+        if (!rotation || !workflow) return;
+        rotation.hidden = reducedMotion.matches;
+        if (
+          !visibleWorkflow ||
+          manuallyPaused ||
+          hovered ||
+          document.hidden ||
+          reducedMotion.matches ||
+          workflow.contains(document.activeElement)
+        )
+          return;
+        timer = window.setTimeout(
+          () => select((activeStep + 1) % cards.length),
+          6000,
+        );
+      }
+
+      const select = (index: number) => {
+        if (activeStep === index) return;
+        const previous = activeStep;
+        activeStep = index;
+        tabs.forEach((tab, i) => {
+          tab.setAttribute("aria-selected", String(i === index));
+          tab.tabIndex = i === index ? 0 : -1;
+        });
+        workflowPanel?.setAttribute("aria-labelledby", `step-${index}`);
+        const leaving = cards[previous];
+        const entering = cards[index];
+        slideAnimations.forEach((animation) => animation.cancel());
+        outgoingCard?.removeAttribute("data-outgoing");
+        leaving.removeAttribute("data-active");
+        leaving.setAttribute("aria-hidden", "true");
+        entering.setAttribute("data-active", "");
+        entering.setAttribute("aria-hidden", "false");
+        if (canAnimate(entering)) {
+          const direction =
+            (previous + 1) % cards.length === index || index > previous
+              ? 1
+              : -1;
+          leaving.setAttribute("data-outgoing", "");
+          outgoingCard = leaving;
+          const transition = { duration: 440, easing: easeOut };
+          const exit = leaving.animate(
+            [
+              { transform: "none" },
+              { transform: `translateX(${-direction * 104}%)` },
+            ],
+            transition,
+          );
+          slideAnimations = [
+            exit,
+            entering.animate(
+              [
+                { transform: `translateX(${direction * 104}%)` },
+                { transform: "none" },
+              ],
+              transition,
+            ),
+          ];
+          exit.onfinish = () => leaving.removeAttribute("data-outgoing");
+        }
+        scheduleRotation();
+        moveSignal(previous);
+      };
+      if (workflow && rotation && "IntersectionObserver" in window) {
+        new IntersectionObserver(
+          ([entry]) => {
+            visibleWorkflow = entry.intersectionRatio >= 0.45;
+            if (!visibleWorkflow) {
+              slideAnimations.forEach((animation) => animation.cancel());
+              outgoingCard?.removeAttribute("data-outgoing");
+            }
+            scheduleRotation();
+          },
+          { threshold: 0.45 },
+        ).observe(workflow);
+        const updateHover = (event: PointerEvent) => {
+          if (event.pointerType === "touch") return;
+          hovered = event.type === "pointerenter";
+          scheduleRotation();
+        };
+        workflow.addEventListener("pointerenter", updateHover);
+        workflow.addEventListener("pointerleave", updateHover);
+        workflow.addEventListener("focusin", scheduleRotation);
+        workflow.addEventListener("focusout", () =>
+          queueMicrotask(scheduleRotation),
+        );
+        rotation.addEventListener("click", () => {
+          manuallyPaused = !manuallyPaused;
+          rotation.textContent = manuallyPaused
+            ? "Resume autoplay"
+            : "Pause autoplay";
+          scheduleRotation();
+        });
+      }
+      tabs.forEach((tab, i) => {
+        tab.addEventListener("click", () => select(i));
+        tab.addEventListener("keydown", (e) => {
+          let next = i;
+          if (e.key === "ArrowDown" || e.key === "ArrowRight")
+            next = (i + 1) % tabs.length;
+          else if (e.key === "ArrowUp" || e.key === "ArrowLeft")
+            next = (i + tabs.length - 1) % tabs.length;
+          else if (e.key === "Home") next = 0;
+          else if (e.key === "End") next = tabs.length - 1;
+          else return;
+          e.preventDefault();
+          select(next);
+          tabs[next].focus();
+        });
+      });
+    </script>
+    <style is:global>
+      /* Independent exploration styles. Original homepage and theme tokens remain untouched. */
+      :root {
+        --logo-green: #189040;
+        --logo-green-ink: #080f09;
+        --ui-ease: cubic-bezier(0.22, 1, 0.36, 1);
+        color-scheme: dark;
+        background: #090b0f;
+        color: #f0f2ed;
+        font-family: var(--autopilot-font);
+        scroll-behavior: smooth;
+        scroll-padding-top: 32px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-size: 15px;
+        line-height: 1.65;
+        -webkit-font-smoothing: antialiased;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button {
+        font: inherit;
+      }
+      button,
+      a {
+        -webkit-tap-highlight-color: transparent;
+      }
+      a:focus-visible,
+      button:focus-visible,
+      [tabindex]:focus-visible {
+        outline: 2px solid var(--logo-green);
+        outline-offset: 5px;
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+      h1,
+      h2,
+      h3 {
+        font-weight: 500;
+      }
+      h2 {
+        font-size: clamp(32px, 3.4vw, 48px);
+        line-height: 1.16;
+        letter-spacing: -0.035em;
+      }
+      h3 {
+        font-size: 20px;
+        line-height: 1.4;
+      }
+      p {
+        color: #aeb8b1;
+      }
+      .wrap {
+        width: min(1280px, calc(100% - 96px));
+        margin-inline: auto;
+      }
+      .header {
+        height: 104px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #2b333d;
+        position: relative;
+        z-index: 5;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 20px;
+        font-weight: 500;
+        letter-spacing: -0.04em;
+      }
+      .brand-product {
+        font-size: 14px;
+        font-weight: 400;
+        letter-spacing: 0;
+        color: #9ca69e;
+        margin-left: 8px;
+      }
+      .desktop-nav {
+        display: flex;
+        gap: 32px;
+        color: #bbc3bd;
+        font-size: 13px;
+      }
+      .desktop-nav a:hover,
+      footer a:hover {
+        color: #94d6a0;
+      }
+      .button {
+        min-height: 48px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 24px;
+        border: 1px solid #3a443d;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 500;
+        transition:
+          background-color 180ms var(--ui-ease),
+          border-color 180ms var(--ui-ease),
+          color 180ms var(--ui-ease),
+          transform 180ms var(--ui-ease);
+        white-space: nowrap;
+      }
+      .button:hover {
+        background: #2b332d;
+        border-color: var(--logo-green);
+      }
+      .primary {
+        background: var(--logo-green);
+        border-color: var(--logo-green);
+        color: var(--logo-green-ink);
+      }
+      .primary:hover {
+        background: var(--logo-green);
+        box-shadow: inset 0 0 0 1px #080f0980;
+      }
+      .button:active,
+      .steps button:active {
+        transform: translateY(1px);
+      }
+      .small {
+        min-height: 40px;
+        padding: 8px 20px;
+      }
+      .hero {
+        position: relative;
+        display: grid;
+        grid-template-columns: 1fr 1.1fr;
+        gap: 64px;
+        align-items: center;
+        padding-block: 80px;
+      }
+      .hero-stage {
+        position: relative;
+      }
+      .hero-backdrop {
+        position: absolute;
+        inset: -104px 0 0;
+        overflow: hidden;
+        background: #090b0f;
+      }
+      .hero-backdrop > img,
+      .hero-backdrop::after {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .hero-backdrop img {
+        object-fit: cover;
+        object-position: 62% 50%;
+        opacity: 0.81;
+        filter: saturate(0.26) brightness(0.72);
+        pointer-events: none;
+      }
+      .hero-backdrop::after {
+        content: "";
+        pointer-events: none;
+        background:
+          radial-gradient(ellipse at 77% 20%, #b7c6dd21, transparent 45%),
+          linear-gradient(
+            110deg,
+            #080a0ff5 2%,
+            #0a0d13c2 39%,
+            #0b111959 79%,
+            #090c13a0 100%
+          ),
+          linear-gradient(0deg, #080a0f 0%, #080a0f61 28%, transparent 68%);
+      }
+      .square {
+        width: 6px;
+        height: 6px;
+        display: inline-block;
+        background: #8ccc91;
+        flex-shrink: 0;
+      }
+      .hero h1 {
+        font-size: clamp(44px, 4.5vw, 68px);
+        line-height: 1.08;
+        letter-spacing: -0.055em;
+        margin-bottom: 28px;
+      }
+      .hero-copy {
+        container-type: inline-size;
+        position: relative;
+        isolation: isolate;
+      }
+      .hero-copy::before {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        inset: -18% -14%;
+        pointer-events: none;
+        background: radial-gradient(
+          ellipse at center,
+          #07090dd4 12%,
+          #07090da6 51%,
+          transparent 76%
+        );
+      }
+      .intro {
+        max-width: 45ch;
+        font-size: clamp(16px, 1.25vw, 18px);
+        line-height: 1.55;
+        color: #d8dce0;
+        text-wrap: pretty;
+      }
+      .actions {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        margin-top: 32px;
+      }
+      .hero-audience {
+        max-width: 52ch;
+        margin-top: 12px;
+        font-size: 13px;
+        line-height: 1.6;
+        color: #c3cbd2;
+        text-wrap: pretty;
+      }
+      .product {
+        border: 1px solid #3b4452;
+        border-radius: 16px;
+        background: #15191f;
+        overflow: hidden;
+        box-shadow: 0 24px 64px #0003;
+      }
+      .product-top {
+        padding: 20px 24px 16px;
+        border-bottom: 1px solid #303946;
+      }
+      .product-top h2 {
+        margin-bottom: 12px;
+        font-size: clamp(21px, 2.1vw, 30px);
+        line-height: 1.18;
+        letter-spacing: -0.035em;
+      }
+      .product-top h2 span {
+        display: inline-block;
+      }
+      .demo-label {
+        font-size: 12px;
+        color: #b0bbc2;
+      }
+      .world {
+        height: 140px;
+        position: relative;
+        overflow: hidden;
+      }
+      .world img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: 50% 48%;
+        filter: brightness(0.65);
+      }
+      .world-caption {
+        position: absolute;
+        top: 10px;
+        left: 12px;
+        display: grid;
+        gap: 1px;
+        padding: 3px 7px;
+        border-radius: 4px;
+        background: #0c1014bb;
+        font-size: 12px;
+        line-height: 1.4;
+      }
+      .world-status {
+        color: #f0cca0;
+      }
+      .incident-body {
+        padding: 24px;
+      }
+      .incident-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+      }
+      .mono {
+        font-family: var(--autopilot-font);
+        font-size: 11px;
+      }
+      .muted {
+        color: #a4b0a7;
+      }
+      .status {
+        font-size: 10px;
+        color: #e0c39b;
+        padding: 3px 8px;
+        border: 1px solid #5b503b;
+        border-radius: 4px;
+      }
+      .console {
+        padding: 16px;
+        background: #101318;
+        border: 1px solid #303946;
+        border-radius: 8px;
+      }
+      .console-label {
+        display: block;
+        font-size: 12px;
+        color: #99a49b;
+        margin-bottom: 8px;
+      }
+      .console code {
+        font-size: 13px;
+        line-height: 1.9;
+        color: #c2cbc4;
+      }
+      .console code span {
+        color: #ddbd91;
+      }
+      .repair {
+        padding-top: 20px;
+      }
+      .repair strong {
+        font-size: 14px;
+        font-weight: 500;
+      }
+      .repair p {
+        font-size: 12px;
+        margin-top: 3px;
+      }
+      .section {
+        padding-block: 104px;
+      }
+      .section-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 64px;
+        margin-bottom: 48px;
+      }
+      .section-heading > p {
+        max-width: 380px;
+        font-size: 14px;
+      }
+      .workflow-layout {
+        display: grid;
+        grid-template-columns: 0.85fr 1.4fr;
+        gap: 48px;
+      }
+      .steps {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .steps button {
+        display: flex;
+        text-align: left;
+        gap: 20px;
+        align-items: flex-start;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        color: #a9b4ac;
+        padding: 20px;
+        cursor: pointer;
+        transition:
+          background-color 180ms var(--ui-ease),
+          border-color 180ms var(--ui-ease),
+          color 180ms var(--ui-ease),
+          transform 180ms var(--ui-ease);
+      }
+      .steps button > span {
+        font-family: var(--autopilot-font);
+        font-size: 12px;
+        padding-top: 3px;
+        color: #8b9b8e;
+      }
+      .steps strong {
+        font-size: 15px;
+        font-weight: 500;
+      }
+      .steps button[aria-selected="true"] {
+        background: #1c2329;
+        border-color: #526957;
+        border-inline-start-color: var(--logo-green);
+        color: #d3ebcf;
+      }
+      @media (hover: hover) {
+        .steps button[aria-selected="false"]:hover {
+          background: #192027;
+          border-color: var(--logo-green);
+          color: #eef3ed;
+        }
+      }
+      .workflow-panel {
+        border: 1px solid #343b46;
+        border-radius: 12px;
+        background: #15191f;
+      }
+      .panel-bar {
+        padding: 20px 28px;
+        border-bottom: 1px solid #343b46;
+        display: flex;
+        justify-content: space-between;
+        font-size: 10px;
+      }
+      .panel-content {
+        padding: 36px;
+      }
+      .workflow-signal {
+        position: relative;
+        max-width: 320px;
+        height: 24px;
+        margin: 0 0 20px;
+      }
+      .workflow-signal::before {
+        content: "";
+        position: absolute;
+        inset: calc(50% - 1px) 12.5% auto;
+        border-top: 1px solid #526957;
+      }
+      .signal-nodes {
+        position: relative;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        place-items: center;
+        height: 100%;
+      }
+      .signal-node {
+        display: grid;
+        place-items: center;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 1px solid #617568;
+        background: #15191f;
+      }
+      .signal-node[data-current] {
+        background: #b6e9a7;
+        border-color: #b6e9a7;
+      }
+      .signal-node[data-current]::after {
+        content: "";
+        width: 5px;
+        height: 9px;
+        border: solid #18251a;
+        border-width: 0 2px 2px 0;
+        transform: translateY(-1px) rotate(45deg);
+      }
+      .signal-travel {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        pointer-events: none;
+      }
+      .signal-travel > span {
+        position: absolute;
+        top: 50%;
+        left: 12.5%;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #b6e9a7;
+        box-shadow: 0 0 0 3px #b6e9a72b;
+        transform: translate(-50%, -50%);
+      }
+      .panel-content h3 {
+        font-size: 26px;
+        letter-spacing: -0.025em;
+        margin-bottom: 16px;
+      }
+      .workflow-description {
+        font-size: 14px;
+        line-height: 1.8;
+        min-height: 76px;
+      }
+      .evidence-block {
+        margin-top: 28px;
+        background: #101318;
+        border-left: 2px solid #8cbb8b;
+        padding: 20px;
+      }
+      .evidence-block p {
+        color: #d2ddd5;
+        font-family: var(--autopilot-font);
+        font-size: 12px;
+        margin-top: 12px;
+        line-height: 1.8;
+      }
+      .panel-note {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        font-size: 11px;
+        color: #9eafa2;
+        margin-top: 28px;
+      }
+      .safety-section {
+        background: #1a201c;
+        border-block: 1px solid #303930;
+      }
+      .safety-layout {
+        padding-block: 80px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 100px;
+      }
+      .safety-copy > p {
+        margin-top: 24px;
+        max-width: 440px;
+        font-size: 14px;
+      }
+      .boundary {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 32px;
+        font-size: 12px;
+        color: #c9dec9;
+      }
+      .safety-list article {
+        padding: 24px 0;
+        border-bottom: 1px solid #353e4b;
+      }
+      .safety-list article:first-child {
+        padding-top: 0;
+      }
+      .safety-list article:last-child {
+        border: 0;
+        padding-bottom: 0;
+      }
+      .safety-list h3 {
+        font-size: 17px;
+      }
+      .safety-list p {
+        font-size: 13px;
+        margin-top: 8px;
+      }
+      .incident-list article {
+        display: grid;
+        grid-template-columns: 48px minmax(215px, 0.72fr) 1.3fr;
+        align-items: center;
+        gap: 24px;
+        padding: 16px 0;
+        border-top: 1px solid #353e4b;
+      }
+      .incident-list article:last-child {
+        border-bottom: 1px solid #353e4b;
+      }
+      .incident-list h3 {
+        font-size: 18px;
+      }
+      .incident-list p {
+        font-size: 13px;
+      }
+      .environment {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border: 1px solid #343b46;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #15191f;
+      }
+      .environment-image {
+        position: relative;
+        min-height: 400px;
+      }
+      .environment-image img {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        object-fit: cover;
+        filter: brightness(0.76) saturate(0.75);
+      }
+      .environment-image > span {
+        position: absolute;
+        left: 24px;
+        bottom: 24px;
+        font-size: 11px;
+        background: #101319e6;
+        padding: 8px 12px;
+        border-radius: 4px;
+      }
+      .environment-copy {
+        padding: 48px;
+      }
+      .environment-copy h2 {
+        font-size: 34px;
+      }
+      .environment-copy > p {
+        font-size: 13px;
+        margin-top: 20px;
+      }
+      .contact {
+        padding-block: clamp(48px, 7vw, 96px) 24px;
+      }
+      .contact-panel {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        display: grid;
+        align-content: center;
+        justify-items: center;
+        gap: 20px;
+        min-height: clamp(360px, 48svh, 520px);
+        padding: clamp(40px, 5vw, 72px) clamp(18px, 5vw, 72px);
+        border: 1px solid #444953;
+        border-radius: 20px;
+        background: #090b0e;
+        text-align: center;
+      }
+      .contact-sand,
+      .contact-panel::before {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+      .contact-sand {
+        z-index: -2;
+        object-fit: cover;
+        object-position: 72% bottom;
+      }
+      .contact-panel::before {
+        content: "";
+        z-index: -1;
+        background: radial-gradient(
+          ellipse at center,
+          #0a0d12a3 0%,
+          #10151b40 70%
+        );
+      }
+      .contact-panel h2 {
+        font-size: clamp(24px, 4vw, 58px);
+        line-height: 1.1;
+        color: #f3f4f5;
+      }
+      .contact-panel p {
+        max-width: 54ch;
+        font-size: clamp(13px, 1.1vw, 16px);
+        color: #ccd1d6;
+        text-wrap: pretty;
+      }
+      .contact-panel .button {
+        margin-top: 6px;
+      }
+      footer {
+        border-top: 1px solid #353e4b;
+        padding-block: 32px;
+        display: flex;
+        align-items: center;
+        gap: 32px;
+        font-size: 11px;
+        color: #a3b0a7;
+      }
+      footer .brand {
+        font-size: 18px;
+        color: #edf2eb;
+      }
+      .menu-button {
+        display: none;
+      }
+      .skip {
+        position: absolute;
+        left: 12px;
+        top: -100px;
+        z-index: 20;
+        background: #d0f3c6;
+        color: #152219;
+        padding: 8px 16px;
+      }
+      .skip:focus {
+        top: 12px;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      @media (min-width: 1600px) {
+        .hero {
+          padding-block: 96px;
+        }
+        .wrap {
+          width: min(1400px, calc(100% - 128px));
+        }
+        .hero h1 {
+          font-size: 76px;
+        }
+        .world {
+          height: 172px;
+        }
+        .incident-body {
+          padding: 28px;
+        }
+      }
+      @media (max-width: 1050px) {
+        .wrap {
+          width: calc(100% - 48px);
+        }
+        .hero {
+          gap: 32px;
+        }
+        .hero h1 {
+          font-size: 48px;
+        }
+        .actions {
+          gap: 16px;
+          align-items: flex-start;
+          flex-direction: column;
+        }
+        .brand-product {
+          display: none;
+        }
+        .workflow-layout {
+          gap: 24px;
+        }
+        .safety-layout {
+          gap: 48px;
+        }
+        .environment-copy {
+          padding: 32px;
+        }
+      }
+      @media (max-width: 760px) {
+        .hero-backdrop {
+          top: -80px;
+          bottom: auto;
+          height: 680px;
+        }
+        .hero-backdrop::after {
+          background:
+            radial-gradient(ellipse at 86% 16%, #b7c6dd20, transparent 55%),
+            linear-gradient(110deg, #080a0fbb, #090d1550),
+            linear-gradient(0deg, #090b0f 0%, #090b0fb0 43%, #090b0f24 88%);
+        }
+        .wrap {
+          width: calc(100% - 40px);
+        }
+        .header {
+          height: 80px;
+        }
+        .desktop-nav,
+        .desktop-contact {
+          display: none;
+        }
+        .menu-button {
+          display: block;
+          border: 1px solid #465347;
+          background: transparent;
+          border-radius: 8px;
+          color: #edf2eb;
+          padding: 8px 16px;
+          min-height: 44px;
+          font-size: 13px;
+        }
+        #mobile-nav {
+          position: absolute;
+          top: 72px;
+          left: 0;
+          right: 0;
+          background: #171d24;
+          border: 1px solid #435146;
+          border-radius: 12px;
+          padding: 12px;
+          box-shadow: 0 16px 24px #0005;
+        }
+        #mobile-nav a {
+          display: block;
+          padding: 12px;
+        }
+        .hero {
+          grid-template-columns: 1fr;
+          padding-block: 48px;
+          gap: 40px;
+        }
+        .hero h1 {
+          font-size: clamp(43px, 10vw, 64px);
+        }
+        .actions {
+          flex-direction: row;
+          align-items: center;
+          gap: 20px;
+        }
+        .actions .button {
+          padding-inline: 16px;
+          font-size: 12px;
+        }
+        .product-top {
+          padding: 18px 20px 14px;
+        }
+        .world {
+          height: 132px;
+        }
+        .incident-body {
+          padding: 20px;
+        }
+        .product-top h2 {
+          font-size: clamp(21px, 5.25vw, 25px);
+        }
+        .status {
+          font-size: 11px;
+        }
+        .section {
+          padding-block: 64px;
+        }
+        .section-heading {
+          display: block;
+          margin-bottom: 32px;
+        }
+        .section-heading > p {
+          margin-top: 24px;
+        }
+        .workflow-layout {
+          grid-template-columns: 1fr;
+          gap: 24px;
+        }
+        .steps {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 8px;
+        }
+        .steps button {
+          padding: 16px 12px;
+          gap: 10px;
+        }
+        .steps strong {
+          font-size: 12px;
+        }
+        .panel-bar {
+          padding: 16px;
+          font-size: 11px;
+        }
+        .panel-content {
+          padding: 24px;
+        }
+        .panel-content h3 {
+          font-size: 24px;
+        }
+        .workflow-description {
+          min-height: 0;
+        }
+        .safety-layout {
+          grid-template-columns: 1fr;
+          padding-block: 56px;
+          gap: 40px;
+        }
+        .incident-list article {
+          grid-template-columns: 44px minmax(0, 1fr);
+          gap: 6px 16px;
+          padding-block: 16px;
+        }
+        .incident-list .incident-glyph {
+          grid-row: span 2;
+          align-self: start;
+        }
+        .incident-list h3 {
+          font-size: 17px;
+        }
+        .incident-list p {
+          grid-column: 2;
+        }
+        .environment {
+          grid-template-columns: 1fr;
+        }
+        .environment-image {
+          min-height: 240px;
+        }
+        .environment-copy {
+          padding: 28px;
+        }
+        .environment-copy h2 {
+          font-size: 30px;
+        }
+        .contact {
+          padding-block: 40px 16px;
+        }
+        footer {
+          flex-wrap: wrap;
+          gap: 20px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        :root {
+          scroll-behavior: auto;
+        }
+        * {
+          transition: none !important;
+        }
+        .button:active,
+        .steps button:active {
+          transform: none;
+        }
+      }
+    </style>
+  </body>
+</html>

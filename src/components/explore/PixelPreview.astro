@@ -1,0 +1,299 @@
+<div data-pixel-preview>
+  <div class="world" id="pixel-preview">
+    <img
+      src="/assets/img/optimized/background_home.webp"
+      alt="Minecraft landscape from the QubeMC website"
+      width="1200"
+      height="675"
+    />
+    <div class="world-caption">
+      <span>Paper server</span><span class="world-status">Server offline</span>
+    </div>
+    <button
+      class="pixel-target"
+      type="button"
+      aria-label="Play pixel scatter"
+      hidden
+    >
+      <canvas aria-hidden="true"></canvas>
+    </button>
+    <div class="preview-controls" hidden>
+      <div class="preview-options" role="group" aria-label="Minecraft preview">
+        <button type="button" data-pixels="off" aria-pressed="true"
+          >Static</button
+        >
+        <button type="button" data-pixels="on" aria-pressed="false"
+          >Pixel effect</button
+        >
+      </div>
+      <span class="pixel-hint" hidden>Hover or tap the outline</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  const preview = document.querySelector("[data-pixel-preview]");
+  const image = preview?.querySelector("img");
+  const target = preview?.querySelector<HTMLButtonElement>(".pixel-target");
+  const canvas = target?.querySelector("canvas");
+  const context = canvas?.getContext("2d");
+  const controls = preview?.querySelector<HTMLElement>(".preview-controls");
+  const options =
+    controls?.querySelectorAll<HTMLButtonElement>("[data-pixels]");
+  const hint = controls?.querySelector<HTMLElement>(".pixel-hint");
+  const motion = matchMedia("(prefers-reduced-motion: reduce)");
+
+  if (
+    preview &&
+    image &&
+    target &&
+    canvas &&
+    context &&
+    controls &&
+    options &&
+    hint
+  ) {
+    let enabled = false;
+    let frame = 0;
+
+    const stop = () => {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      target.classList.remove("is-scattering");
+    };
+
+    const play = () => {
+      if (frame || target.hidden || document.hidden || !image.naturalWidth)
+        return;
+
+      const { width, height, left, top } = canvas.getBoundingClientRect();
+      if (!width || !height) return;
+      const imageBounds = image.getBoundingClientRect();
+      const style = getComputedStyle(image);
+      const [positionX, positionY] = style.objectPosition
+        .split(" ")
+        .map(parseFloat);
+      const cover = Math.max(
+        imageBounds.width / image.naturalWidth,
+        imageBounds.height / image.naturalHeight,
+      );
+      const imageLeft =
+        imageBounds.left +
+        ((imageBounds.width - image.naturalWidth * cover) * positionX) / 100;
+      const imageTop =
+        imageBounds.top +
+        ((imageBounds.height - image.naturalHeight * cover) * positionY) / 100;
+
+      const padding = 12;
+      const columns = 8;
+      const rows = 5;
+      const tileWidth = (width - padding * 2) / columns;
+      const tileHeight = (height - padding * 2) / rows;
+      const tiles = Array.from({ length: columns * rows }, (_, index) => {
+        const column = index % columns;
+        const row = Math.floor(index / columns);
+        const x = padding + column * tileWidth;
+        const y = padding + row * tileHeight;
+        const angle = Math.atan2(
+          row - (rows - 1) / 2,
+          column - (columns - 1) / 2,
+        );
+        const distance = 5 + ((index * 7) % 8);
+        return {
+          x,
+          y,
+          dx: Math.cos(angle) * distance,
+          dy: Math.sin(angle) * distance,
+        };
+      });
+
+      const scale = Math.min(devicePixelRatio || 1, 2);
+      canvas.width = Math.round(width * scale);
+      canvas.height = Math.round(height * scale);
+      context.setTransform(scale, 0, 0, scale, 0, 0);
+      target.classList.add("is-scattering");
+
+      const start = performance.now();
+      const draw = (now: number) => {
+        const progress = Math.max(0, (now - start) / 880);
+        if (progress >= 1) {
+          stop();
+          return;
+        }
+        const spread =
+          progress < 0.26
+            ? 1 - (1 - progress / 0.26) ** 3
+            : ((1 - progress) / 0.74) ** 2;
+        context.clearRect(0, 0, width, height);
+        context.filter = "none";
+        context.globalAlpha = Math.min(1, spread * 2);
+        context.fillStyle = "#18261d";
+        context.fillRect(
+          padding,
+          padding,
+          width - padding * 2,
+          height - padding * 2,
+        );
+        context.globalAlpha = 1;
+        context.filter = style.filter;
+        for (const tile of tiles) {
+          context.drawImage(
+            image,
+            (left + tile.x - imageLeft) / cover,
+            (top + tile.y - imageTop) / cover,
+            tileWidth / cover,
+            tileHeight / cover,
+            tile.x + tile.dx * spread,
+            tile.y + tile.dy * spread,
+            tileWidth,
+            tileHeight,
+          );
+        }
+        frame = requestAnimationFrame(draw);
+      };
+      frame = requestAnimationFrame(draw);
+    };
+
+    const setMode = (pixels: boolean) => {
+      enabled = pixels;
+      stop();
+      for (const option of options) {
+        option.setAttribute(
+          "aria-pressed",
+          String((option.dataset.pixels === "on") === pixels),
+        );
+      }
+      target.hidden = !pixels || motion.matches;
+      hint.hidden = !pixels;
+      hint.textContent = motion.matches
+        ? "Reduced motion"
+        : "Hover or tap the outline";
+    };
+
+    const readMode = () =>
+      setMode(new URL(location.href).searchParams.get("pixels") === "on");
+    controls.hidden = false;
+    readMode();
+
+    for (const option of options) {
+      option.addEventListener("click", () => {
+        const pixels = option.dataset.pixels === "on";
+        const url = new URL(location.href);
+        if (pixels) url.searchParams.set("pixels", "on");
+        else url.searchParams.delete("pixels");
+        history.replaceState(history.state, "", url);
+        setMode(pixels);
+        if (pixels) play();
+      });
+    }
+    target.addEventListener("pointerenter", (event) => {
+      if (event.pointerType === "mouse") play();
+    });
+    target.addEventListener("click", play);
+    motion.addEventListener("change", () => setMode(enabled));
+    window.addEventListener("popstate", readMode);
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) stop();
+    });
+    if ("ResizeObserver" in window) new ResizeObserver(stop).observe(image);
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(([entry]) => {
+        if (!entry.isIntersecting) stop();
+      }).observe(preview);
+    }
+  }
+</script>
+
+<style>
+  .pixel-target {
+    position: absolute;
+    inset: 8px 16px auto auto;
+    width: 120px;
+    height: min(76px, calc(100% - 68px));
+    padding: 0;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+  }
+  .pixel-target::after {
+    content: "";
+    position: absolute;
+    inset: 10px;
+    border: 1px solid var(--logo-green);
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px #11141392;
+    pointer-events: none;
+  }
+  .pixel-target canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .pixel-target.is-scattering canvas {
+    visibility: visible;
+  }
+  .pixel-target.is-scattering::after {
+    opacity: 0;
+  }
+  .preview-controls {
+    position: absolute;
+    inset: auto 10px 10px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    gap: 8px;
+    pointer-events: none;
+  }
+  .preview-options {
+    display: flex;
+    flex: none;
+    align-items: center;
+    pointer-events: auto;
+    gap: 4px;
+    padding: 3px;
+    border: 1px solid #526957;
+    border-radius: 8px;
+    background: #151c17ec;
+  }
+  .preview-options button {
+    min-height: 34px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: 4px 8px;
+    background: transparent;
+    color: #d4ded5;
+    font-size: 12px;
+    cursor: pointer;
+    transition:
+      border-color 180ms var(--ui-ease),
+      background-color 180ms var(--ui-ease);
+  }
+  .preview-options button:hover {
+    border-color: var(--logo-green);
+  }
+  .preview-options button[aria-pressed="true"] {
+    background: #24332a;
+    color: #eef3ef;
+    box-shadow: inset 0 -2px var(--logo-green);
+  }
+  .pixel-hint {
+    order: -1;
+    line-height: 1.35;
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: #151c17ec;
+    font-size: 11px;
+    color: #d4ded5;
+  }
+  @media (max-width: 365px) {
+    .pixel-target {
+      right: 8px;
+      width: 108px;
+    }
+  }
+</style>
